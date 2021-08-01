@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyz.order.dao.ITicketDao">
+
+
+    <select id="showAllTickets" resultType="com.xyz.order.model.Ticket" parameterType="HashMap">
+
+        <![CDATA[
+        select
+                    id as id,
+                    customerName as customerName,
+                    mobile as mobile,
+                    price as price,
+                    status as status,
+                    device as device,
+                    devicePassword as devicePassword,
+                    deviceIssue as deviceIssue,
+                    date_format(date,'%Y-%m-%d') as date,
+                    paymentMethod as paymentMethod,
+                    amountDue as amountDue,
+                    createdBy as createdBy,
+                    isDeleted as isDeleted,
+                    store as store,
+                    notes as notes
+                    from ticket
+                    where /*isDeleted = "0" and*/ store = #{store}
+                    ]]>
+
+
+        <choose>
+            <when test="ifInvo == null">
+                AND status != "1"
+            </when>
+            <otherwise>
+                AND status = "1" AND isDeleted = "0"
+            </otherwise>
+        </choose>
+
+<!--        <if test="order!=null">
+            order by date ${order}
+        </if>
+        <if test="order==null">
+            order by date DESC
+        </if>-->
+        <if test="order!=null">
+            order by date_format(date,'%Y-%m-%d-%h-%i') ${order}
+        </if>
+        <if test="order==null">
+            order by date_format(date,'%Y-%m-%d-%h-%i') DESC
+        </if>
+
+
+
+    </select>
+
+    <select id="searchAllTickets" resultType="com.xyz.order.model.Ticket" parameterType="HashMap">
+
+        <![CDATA[
+        select
+                    id as id,
+                    customerName as customerName,
+                    mobile as mobile,
+                    price as price,
+                    status as status,
+                    device as device,
+                    devicePassword as devicePassword,
+                    deviceIssue as deviceIssue,
+                    date_format(date,'%Y-%m-%d') as date,
+                    paymentMethod as paymentMethod,
+                    amountDue as amountDue,
+                    createdBy as createdBy,
+                    isDeleted as isDeleted,
+                    store as store,
+                    notes as notes
+                    from ticket
+                    where /*isDeleted = "0" and */store = #{store}
+                    ]]>
+
+        <if test="id!=null">
+            and id = #{id}
+        </if>
+        <if test="customerName!= null">
+            and customerName like #{customerName}
+        </if>
+        <if test=" mobile!= null">
+            and mobile like #{mobile}
+        </if>
+        <if test=" device!= null">
+            and device like #{device}
+        </if>
+
+        <if test=" status!= null">
+            and status = #{status}
+        </if>
+        <if test="startDate!=null">
+            <![CDATA[
+            and date_format(date,'%Y-%m-%d')>= #{startDate}
+                ]]>
+        </if>
+        <if test="endDate!=null">
+            <![CDATA[ and date_format(date,'%Y-%m-%d') <= #{endDate}
+          ]]>
+        </if>
+        <if test="order!=null">
+            order by date_format(date,'%Y-%m-%d-%h-%i') ${order}
+        </if>
+        <if test="order==null">
+            order by date_format(date,'%Y-%m-%d-%h-%i') DESC
+        </if>
+
+
+
+
+    </select>
+
+
+
+
+
+
+    <select id="getTicket" resultType="com.xyz.order.model.Ticket">
+            <![CDATA[
+
+             SELECT
+                    id as id,
+                    customerName as customerName,
+                    mobile as mobile,
+                    price as price,
+                    status as status,
+                    device as device,
+                    devicePassword as devicePassword,
+                    deviceIssue as deviceIssue,
+                    date as date ,
+                    createdBy as createdBy,
+                    amountDue as amountDue,
+                    paymentMethod as paymentMethod,
+                    isDeleted as isDeleted,
+                    store as store,
+                    notes as notes
+                    FROM ticket
+                    WHERE id=#{id}
+
+
+        ]]>
+
+        </select>
+
+    <update parameterType="com.xyz.order.model.Ticket" id="updateTicket">
+        update ticket set customerName=#{customerName},mobile=#{mobile},device=#{device},deviceIssue=#{deviceIssue},devicePassword=#{devicePassword},price=#{price} , amountDue=#{amountDue}, status = #{status} ,createdBy = #{createdBy} , isDeleted = #{isDeleted} where id=#{id}
+    </update>
+
+    <update parameterType="HashMap" id="updateNotes">
+        update ticket set notes=#{notes} where id=#{id}
+    </update>
+
+    <update parameterType="String" id="updateCheckOutTime">
+        update ticket set date = now() where id=#{id}
+    </update>
+
+
+    <insert id="createTicket" parameterType="com.xyz.order.model.Ticket">
+        insert into ticket(
+        customerName,
+        mobile,
+        device,
+        deviceIssue,
+        devicePassword,
+        date,
+        price,
+        status,
+        createdBy,
+        amountDue,
+        isDeleted,
+        store,
+        notes
+        )values (
+        #{customerName},
+        #{mobile},
+        #{device},
+        #{deviceIssue},
+        #{devicePassword},
+        now(),
+        #{price},
+        #{status},
+        #{createdBy},
+        #{amountDue},
+        #{isDeleted},
+        #{store},
+        #{notes}
+        )
+    </insert>
+
+    <select id="getSales" resultType="com.xyz.order.model.Sales" parameterType="HashMap">
+        <![CDATA[
+
+    SELECT
+    SUM(if(t.status = "1",t.price,0)) as sales,
+    t.store as store,
+    ROUND(SUM(if(t.status = "1",t.price,0))*3/23,2) as GST,
+    ROUND( SUM(if(t.status = "1",t.price,0)) - SUM(if(t.status = "1",t.price,0))*3/23,2) as salesExlGst,
+    COUNT(*) as ticketNum ,
+    SUM(t.status = "1" ) as salesNum,
+    SUM(t.status = "2" ) as paidPartial,
+    SUM(t.status = "3" ) as repaired,
+    SUM(t.status = "4" ) as sendAway
+        FROM ticket t
+        INNER JOIN company c
+        on c.store = t.store
+        where c.company = (select company from user where name = #{name})
+   ]]>
+
+        <if test="Date!=null">
+            and date_format(date,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        </if>
+
+        <if test="startDate!=null">
+            <![CDATA[
+            and date_format(t.date,'%Y-%m-%d')>= #{startDate}
+                ]]>
+        </if>
+        <if test="endDate!=null">
+            <![CDATA[ and date_format(t.date,'%Y-%m-%d') <= #{endDate}
+          ]]>
+        </if>
+
+        <![CDATA[         GROUP BY t.store
+          ]]>
+    </select>
+
+
+<!--    <insert id="createLogger" parameterType="com.xyz.order.model.Logger">
+        insert into logger(
+        name,
+        record,
+        date,
+        ticketID
+        )values (
+        #{name},
+        #{record},
+        now(),
+        #{ticketID})
+    </insert>
+
+
+    <select id="showAllLogger" resultType="com.xyz.order.model.Logger" parameterType="HashMap">
+        <![CDATA[
+        select
+                    id as id,
+                    name as name,
+                    record as record,
+                    date as date,
+                    ticketID as ticketID
+                    from logger
+                    ]]>
+        <if test="username!= null">
+             where name like #{username}
+        </if>
+        <if test="ticketID!= null">
+            where ticketID = #{ticketID}
+        </if>
+        <if test="date!=null">
+            where date_format(date,'%Y-%m-%d') = #{date}
+        </if>
+
+    </select>-->
+
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyz.order.dao.IUserDao">
+    <select id="searchUserList" resultType="com.xyz.order.model.User">
+            <![CDATA[
+        select
+                    id as id,
+                    name as name,
+                    password as password,
+                    role as role,
+                    isDeleted as isDeleted,
+                    company as company
+                    from user
+                    where isDeleted = "0"
+
+        ]]>
+
+        <if test="name!=null">
+            and name like #{name}
+        </if>
+        <if test="company!= null">
+            and company like #{company}
+        </if>
+            order by company
+        </select>
+
+    <insert id="createUser" parameterType="com.xyz.order.model.User">
+        insert into user(
+        name,
+        password,
+        role,
+        isDeleted,
+        company
+        )values (
+        #{name},
+        #{password},
+        #{role},
+        #{isDeleted},
+        #{company}
+        )
+    </insert>
+
+    <select id="checkLogin" resultType="int">
+            <![CDATA[
+        SELECT EXISTS(SELECT 1 FROM user WHERE name=#{username} and password = #{password})
+
+        ]]>
+        </select>
+
+
+
+    <select id="getStore" resultType="com.xyz.order.model.Store" parameterType="String">
+            <![CDATA[
+        SELECT id  as id , company as company, store as store, isDeleted as isDeleted from company where company = (SELECT company from user where name = #{username})
+        ]]>
+        </select>
+
+
+    <select id="checkRole" resultType="String">
+            <![CDATA[
+        SELECT role FROM user WHERE name=#{username}
+
+        ]]>
+        </select>
+
+    <select id="getUser" resultType="com.xyz.order.model.User" parameterType="String">
+            <![CDATA[
+        SELECT id as id , name as name, password as password , role as role , isDeleted as isDeleted , company as company FROM user WHERE id=#{id}
+
+        ]]>
+        </select>
+
+
+
+    <update parameterType="com.xyz.order.model.User" id="updateUser">
+        update user set name=#{name},password=#{password}, isDeleted = #{isDeleted} , company = #{company} where id=#{id}
+    </update>
+</mapper>
