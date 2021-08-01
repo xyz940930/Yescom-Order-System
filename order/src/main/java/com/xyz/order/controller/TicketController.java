@@ -62,7 +62,7 @@ public class TicketController {
 
         /*Check if user is still valid*/
         if ("".equals(name) || null == name || "".equals(store) || null == store) {
-            //返回重新登录
+            //return to login page
             return "index";
         }
 
@@ -80,9 +80,9 @@ public class TicketController {
         if (StringUtil.isNotEmpty(ifInvo)) {
            map.put("ifInvo",ifInvo);
         }
-        /*处理pagenumber null*/
-        int pageNum = 1;    //默认显示为第一页
-        int pageSize = 10;   //每页显示几条数据
+        /*process pagenumber null*/
+        int pageNum = 1;    //default page number is 1
+        int pageSize = 10;   //number of records show per page
 
         try{
             pageNum = Integer.parseInt(pno);
@@ -162,7 +162,7 @@ public class TicketController {
 
         /*Check if user is still valid*/
         if ("".equals(name) || null == name || "".equals(store) || null == store) {
-            //返回重新登录
+        //return to login page
             return "index";
         }
         /*Check Search Bar info*/
@@ -211,9 +211,9 @@ public class TicketController {
             map.put("order",order);
         }
 
-        /*处理pagenumber null*/
-        int pageNum = 1;    //默认显示为第一页
-        int pageSize = 10;   //每页显示几条数据
+        /*process pagenumber null*/
+        int pageNum = 1;    //default page number is 1
+        int pageSize = 10;   //number of records show per page
 
         try{
             pageNum = Integer.parseInt(pno);
@@ -524,7 +524,7 @@ public class TicketController {
         String endDate = request.getParameter("endDate");
 
         if ("".equals(name) || null == name || "".equals(store) || null == store) {
-            //返回重新登录
+            //return to login page
             return "index";
         }
         if("".equals(startDate) || null == startDate|| "".equals(endDate) || null == endDate){
@@ -552,58 +552,10 @@ public class TicketController {
         model.addAttribute("sales", sales);
         model.addAttribute("name", name);
         model.addAttribute("store",store);
-
-
-    return  "totalSales";
-
+        
+        return  "totalSales";
     }
 
-/*    @RequestMapping(value = "/showLoggers")
-    public String showLoggers(HttpServletRequest request, HttpServletResponse response, Model model) {
-        String name = request.getParameter("name");
-        String store = request.getParameter("store");
-        String pno = request.getParameter("pageNum");
-        String username = request.getParameter("username");
-        String date = request.getParameter("date");
-        String ticketID = request.getParameter("ticketID");
-        Map<String, Object> map = new HashMap<String, Object>();
-        if ("".equals(name) || null == name || "".equals(store) || null == store) {
-            //返回重新登录
-            return "index";
-        }
-
-
-        if (StringUtil.isNotEmpty(username)) {
-            map.put("username", username);
-        }
-        if (StringUtil.isNotEmpty(date)) {
-            map.put("date", date);
-        }
-        if (StringUtil.isNotEmpty(ticketID)) {
-            map.put("ticketID", ticketID);
-        }
-        *//*处理pagenumber null*//*
-        int pageNum = 1;    //默认显示为第一页
-        int pageSize = 10;   //每页显示几条数据
-
-        try {
-            pageNum = Integer.parseInt(pno);
-        } catch (Exception e) {
-
-        }
-        if (pageNum < 1) {
-            pageNum = 1;
-        }
-        PageHelper.startPage(pageNum, pageSize);
-        List<Logger> logger = this.ticketService.showAllLogger(map);
-        PageInfo pageInfo = new PageInfo(logger);
-        List<Logger> loggerList = pageInfo.getList();
-        model.addAttribute("loggerList", loggerList);
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("name", name);
-        model.addAttribute("store",store);
-        return  "updateHistory";
-    }*/
     @RequestMapping(value = "/showInvoice")
     public String showInvoice(HttpServletRequest request, HttpServletResponse response, Model model) {
 
@@ -614,7 +566,7 @@ public class TicketController {
         }
         String id = request.getParameter("id");
         if ("".equals(id) || null == id || "".equals(id) || null == id) {
-            //返回重新登录
+            //return to login page
             return "index";
         }
         model.addAttribute("ticketID",id);
@@ -634,7 +586,7 @@ public class TicketController {
 
         String id = request.getParameter("id");
         if ("".equals(id) || null == id || "".equals(id) || null == id) {
-            //返回重新登录
+            //return to login page
             return "index";
         }
         model.addAttribute("ticketID",id);
@@ -666,41 +618,3 @@ public class TicketController {
     }*/
 
 
-
-
-
-
-
-/*    public RestResp searchKuaiPings(String pushStatus,String types, String pNo, String pSize){
-        RestResp restResp = new RestResp();
-        int pageNum = 0;
-        int pageSize = 10;
-        try{
-            pageNum = Integer.parseInt(pNo);
-            pageSize = Integer.parseInt(pSize);
-        }catch (Exception e){
-            loger.info("searchKuaiPings 分页异常{},{}",pNo,pSize);
-            pageSize = 10;
-        }
-
-        if(0 == pageNum || 0 > pageNum){
-            pageNum = 1;
-        }
-        Integer pstatus = null;
-        if(StringUtils.isNotBlank(pushStatus)){
-            try {
-                pstatus = Integer.parseInt(pushStatus);
-            }catch (Exception e){}
-        }
-
-        //查询快评列表
-        Map<String,Object> map = new HashMap<>();
-        map.put("pushStatus",pstatus);
-        map.put("types",getTypes(types));
-        PageHelper.startPage(pageNum,pageSize);
-        List<KuaiPing> kuaiPings = this.kuaiPingDao.searchKuaiPings(map);
-        PageInfo pageInfo = new PageInfo(kuaiPings);
-        restResp.setSuccess();
-        restResp.setData(pageInfo);
-        return restResp;
-    }*/
