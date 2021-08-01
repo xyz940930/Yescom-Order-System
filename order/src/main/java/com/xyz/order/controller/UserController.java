@@ -47,7 +47,7 @@ public class UserController {
         int result = 0;
         String store = null;
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        /*String enPassword = password; //User.encode(password);  //md5加密!*/
+        /*String enPassword = password; //User.encode(password);  //md5 encrpyt!*/
         try {
             result = this.UserService.checkLogin(username, password);
         } catch (Exception e) {
@@ -99,7 +99,6 @@ public class UserController {
         Map<String, Object> map = new HashMap<String, Object>();
 
         if ("".equals(name) || null == name || "".equals(store) || null == store) {
-            //返回重新登录
             return "index";
         }
 
@@ -112,8 +111,8 @@ public class UserController {
         }
 
         /*处理pagenumber null*/
-        int pageNum = 1;    //默认显示为第一页
-        int pageSize = 10;   //每页显示几条数据
+        int pageNum = 1;   
+        int pageSize = 10;  
 
         try {
             pageNum = Integer.parseInt(pno);
@@ -232,44 +231,5 @@ public class UserController {
 
         return resultMap;
     }
-
-
-
-
-
-/*    public RestResp searchKuaiPings(String pushStatus,String types, String pNo, String pSize){
-        RestResp restResp = new RestResp();
-        int pageNum = 0;
-        int pageSize = 10;
-        try{
-            pageNum = Integer.parseInt(pNo);
-            pageSize = Integer.parseInt(pSize);
-        }catch (Exception e){
-            loger.info("searchKuaiPings 分页异常{},{}",pNo,pSize);
-            pageSize = 10;
-        }
-
-        if(0 == pageNum || 0 > pageNum){
-            pageNum = 1;
-        }
-        Integer pstatus = null;
-        if(StringUtils.isNotBlank(pushStatus)){
-            try {
-                pstatus = Integer.parseInt(pushStatus);
-            }catch (Exception e){}
-        }
-
-        //查询快评列表
-        Map<String,Object> map = new HashMap<>();
-        map.put("pushStatus",pstatus);
-        map.put("types",getTypes(types));
-        PageHelper.startPage(pageNum,pageSize);
-        List<KuaiPing> kuaiPings = this.kuaiPingDao.searchKuaiPings(map);
-        PageInfo pageInfo = new PageInfo(kuaiPings);
-        restResp.setSuccess();
-        restResp.setData(pageInfo);
-        return restResp;
-    }*/
-
 
 }
